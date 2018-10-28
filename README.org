@@ -3,22 +3,48 @@
 An attempt to fully configure Docker image with a ready-to-use Nix
 environment.
 
-** Goals [0/1]
+** Prior work
+   
+This work would not be possible without 
+
+** Goals
 
 Goals are listed in order of importance. Once goal is reached it will be crossed
-over. Top level goals mean to represent
+over.
 
-*** Nix should be easy to try out in a Docker container (PROGRESS: [0/4])
+*** Easy to try out Nix in a Docker container ([0/3])
 
-Currently our installation swe lose a lot of
-It should not take more then few minutes to be able to have a working Nix
-environment.
+Currently installation story is not perfect. A lot of potential users are
+feeling overwhelmed by the amount of installation steps and options. While
+options are always good to have, having to much of them at first only confuses
+potential users.
 
-      
-- [ ] item 1
-- [ ] 
+At the same time we also must admit that Docker is some sort of industry
+standard. For this project we can assume that most potential users will have
+basic Docker knowledge. (/I'm aware this are not all of our potential users,
+this project does not try to make it work for everybody./)
 
-*** [/] Like it or not Docker is a industry standard. Many of us want or have no choice but to use Docker at work. Every commit / release
+Tasks:
+
+- [ ] Build a Docker image with Nix and configure Nix to be configured with no
+  sandbox mode enabled.
+  
+  This would allow potential users to get Nix environment by typing:
+   
+  #+BEGIN_SRC console
+    $ docker run -ti nixos/nix
+  #+END_SRC
+
+- [ ] Integrate
+
+**** TODO [ ] 
+
+     
+*** Integrate Nix 
+
+Like it or not Docker is a industry standard. Many of us want or have no choice but to use Docker at work. Every commit / release
+
+*** TODO not everybody will
       
 - [ ] Show how to build Docker images with Nix, its advantages over
       Dockerfiles and what problems is possible to avoid when using Nix to
