@@ -5,7 +5,10 @@ environment.
 
 ** Prior work
    
-This work would not be possible without 
+This work would not be possible without prior efforts:
+
+- https://github.com/NixOS/nixpkgs/tree/master/pkgs/build-support/docker
+- https://github.com/LnL7/nix-docker
 
 ** Goals
 
