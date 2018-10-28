@@ -50,7 +50,7 @@ Tasks:
     $ docker run -ti --privileged nixos/nix-sandbox:latest
   #+END_SRC
   
-  Default user is ~~root~~ and builds are performed without ~~nix-daemon~~.
+  Default user is =root= and builds are performed without =nix-daemon=.
   
 - [ ] Build a Docker image with Nix and configure Nix to be running with enabled
   multiuser mode.
@@ -63,7 +63,7 @@ Tasks:
     $ docker run -ti --privileged nixos/nix-daemon:latest
   #+END_SRC
   
-  Default user is ~~app~~ and builds are performed via ~~nix-daemon~~.
+  Default user is =app= and builds are performed via =nix-daemon=.
   
 *** 2. Companies using Docker and Nix should be able to extend on this work
 
