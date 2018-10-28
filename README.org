@@ -47,8 +47,10 @@ Tasks:
   This would allow potential users to get Nix environment by typing:
 
   #+BEGIN_SRC shell
-    $ docker run -ti nixos/nix-sandbox:latest
+    $ docker run -ti --privileged nixos/nix-sandbox:latest
   #+END_SRC
+  
+  Default user is ~~root~~ and builds are performed without ~~nix-daemon~~.
   
 - [ ] Build a Docker image with Nix and configure Nix to be running with enabled
   multiuser mode.
@@ -56,8 +58,12 @@ Tasks:
   This would allow potential users to get Nix environment by typing:
 
   #+BEGIN_SRC shell
-    $ docker run -ti nixos/nix-multiuser:latest
+    $ docker run -ti --privileged nixos/nix-multiuser:latest
+    or
+    $ docker run -ti --privileged nixos/nix-daemon:latest
   #+END_SRC
+  
+  Default user is ~~app~~ and builds are performed via ~~nix-daemon~~.
   
 *** 2. Companies using Docker and Nix should be able to extend on this work
 
