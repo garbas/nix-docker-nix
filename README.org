@@ -12,10 +12,9 @@ This work would not be possible without prior efforts:
 
 ** Goals
 
-Goals are listed in order of importance. Once goal is reached it will be crossed
-over.
+Goals are listed in order of importance.
 
-*** #. Easy to try out Nix in a Docker container ([0/3])
+*** 1. Easy to try out Nix in a Docker container
 
 Currently installation story is not perfect. A lot of potential users are
 feeling overwhelmed by the amount of installation steps and options. While
@@ -60,9 +59,9 @@ Tasks:
     $ docker run -ti nixos/nix-multiuser:latest
   #+END_SRC
   
-*** #. Companies using Docker and Nix should be able to extend on this work
+*** 2. Companies using Docker and Nix should be able to extend on this work
 
-*** #. Improve documentation and messaging how and why to build Docker images with Nix
+*** 3. Improve documentation and messaging how and why to build Docker images with Nix
 
 ** Want to help? Need help?
 
