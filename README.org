@@ -1,0 +1,25 @@
+* Nix-Docker-Nix
+
+An attempt to fully configure Docker image with a ready-to-use Nix
+environment.
+
+** Goals [0/1]
+
+Goals are listed in order of importance. Once goal is reached it will be crossed
+over. Top level goals mean to represent
+
+*** Nix should be easy to try out in a Docker container (PROGRESS: [0/4])
+
+Currently our installation swe lose a lot of
+It should not take more then few minutes to be able to have a working Nix
+environment.
+
+      
+- [ ] item 1
+- [ ] 
+
+*** [/] Like it or not Docker is a industry standard. Many of us want or have no choice but to use Docker at work. Every commit / release
+      
+- [ ] Show how to build Docker images with Nix, its advantages over
+      Dockerfiles and what problems is possible to avoid when using Nix to
+      build Docker image.
