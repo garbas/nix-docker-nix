@@ -12,7 +12,7 @@ This work would not be possible without
 Goals are listed in order of importance. Once goal is reached it will be crossed
 over.
 
-*** Easy to try out Nix in a Docker container ([0/3])
+*** #. Easy to try out Nix in a Docker container ([0/3])
 
 Currently installation story is not perfect. A lot of potential users are
 feeling overwhelmed by the amount of installation steps and options. While
@@ -26,26 +26,44 @@ this project does not try to make it work for everybody./)
 
 Tasks:
 
-- [ ] Build a Docker image with Nix and configure Nix to be configured with no
-  sandbox mode enabled.
+- [ ] Build a Docker image with Nix and configure Nix to be running without
+      sandbox mode.
   
   This would allow potential users to get Nix environment by typing:
    
-  #+BEGIN_SRC console
-    $ docker run -ti nixos/nix
+  #+BEGIN_SRC shell
+    $ docker run -ti nixos/nix:latest
   #+END_SRC
 
-- [ ] Integrate
+- [ ] Test Nix installation on each commit to Nix repository.
 
-**** TODO [ ] 
+  https://github.com/grahamc/nix-install-matrix/tree/refactored-hacks
+  
+- [ ] Build a Docker image with Nix and configure Nix to be running with enabled
+  sandbox mode.
+  
+  This would allow potential users to get Nix environment by typing:
 
-     
-*** Integrate Nix 
+  #+BEGIN_SRC shell
+    $ docker run -ti nixos/nix-sandbox:latest
+  #+END_SRC
+  
+- [ ] Build a Docker image with Nix and configure Nix to be running with enabled
+  multiuser mode.
+  
+  This would allow potential users to get Nix environment by typing:
 
-Like it or not Docker is a industry standard. Many of us want or have no choice but to use Docker at work. Every commit / release
+  #+BEGIN_SRC shell
+    $ docker run -ti nixos/nix-multiuser:latest
+  #+END_SRC
+  
+*** #. Companies using Docker and Nix should be able to extend on this work
 
-*** TODO not everybody will
-      
-- [ ] Show how to build Docker images with Nix, its advantages over
-      Dockerfiles and what problems is possible to avoid when using Nix to
-      build Docker image.
+*** #. Improve documentation and messaging how and why to build Docker images with Nix
+
+** Want to help? Need help?
+
+Look at currently open issues and get engaged.
+Looking for help? Open an issue.
+
+https://github.com/nix-community/nix-docker-nix/issues
