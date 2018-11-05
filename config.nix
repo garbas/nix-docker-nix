@@ -149,7 +149,7 @@ let
             '';
           };
           Healthcheck = mkOption {
-            type = types.nullOr (types.submodule healthcheck);
+            type = types.nullOr (types.submodule { options = healthcheck; });
             default = null;
             description = ''
               A test to perform to determine whether the container is healthy.
@@ -202,10 +202,12 @@ in
   builtins.mapAttrs
     (n: v: if n == "ExposedPorts" || n == "Volumes"
              then builtins.listToAttrs (builtins.map (x: { name = x; value = {}; }) v)
+           else if n == "Healthcheck"
+             then pkgs.lib.filterAttrs (n2: v2: n2 != "_module" && v2 != null) v
            else if n == "Env"
              then pkgs.lib.mapAttrsToList (n: v: "${n}=${v}") v
            else v)
     (pkgs.lib.filterAttrs
       (n: v: n != "_module" &&  # remove internal representation
-             v != null        # remove unassigned values
+             v != null          # remove unassigned values
       ) eval.config)

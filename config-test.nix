@@ -20,7 +20,12 @@ in
           Env = { "PATH" = "/bin:/usr/bin"; };
           Entrypoint = [ "/bin/entrypoint.sh" ];
           Cmd = [ "/bin/bash" ];
-          Healthcheck = {};
+          Healthcheck = {
+            Test = [ "test" ];
+            Interval = 123;
+            Timeout = 123;
+            Retries = 123;
+          };
           Volumes = [ "/app" "/etc/secrets" ];
           WorkingDir = "/app";
         };
