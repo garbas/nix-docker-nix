@@ -3,6 +3,10 @@
 An attempt to fully configure Docker image with a ready-to-use Nix
 environment.
 
+Work in this repository is exploratory and once work is done it should be
+merged upstream. In order to push things upstream we should build docker images
+ with `dockerTools` functions in `nixpkgs`.
+
 ** Prior work
    
 This work would not be possible without prior efforts:
@@ -66,7 +70,7 @@ Tasks:
   Default user is =app= and builds are performed via =nix-daemon=.
   
 *** 2. Companies using Docker and Nix should be able to extend on this work
-
+    
 *** 3. Improve documentation and messaging how and why to build Docker images with Nix
 
 ** Want to help? Need help?
