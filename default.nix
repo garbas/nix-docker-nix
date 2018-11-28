@@ -6,7 +6,8 @@ let
   inherit (pkgs) stdenv;
   inherit (pkgs.lib) concatStringsSep genList;
 
-  channel = "nixos-${builtins.readFile "${pkgs.path}/.version"}";
+  channel = builtins.replaceStrings ["\n"] [""]
+    "nixos-${builtins.readFile "${pkgs.path}/.version"}";
 
   channelUrl = "https://github.com/NixOS/nixpkgs-channels/archive/${channel}.tar.gz";
 
