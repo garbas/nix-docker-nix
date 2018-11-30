@@ -9,15 +9,7 @@ let
   channel = builtins.replaceStrings ["\n"] [""]
     "nixos-${builtins.readFile "${pkgs.path}/.version"}";
 
-  channelUrl = "https://github.com/NixOS/nixpkgs-channels/archive/${channel}.tar.gz";
-
   nixVersion = (builtins.parseDrvName pkgs.nix.name).version;
-
-  nixpkgsChannel = pkgs.runCommand "nixpkgs-channel" {} ''
-    mkdir -p $out/nixpkgs
-    cp -R ${pkgs.path}/* $out/nixpkgs/
-    cp -R ${pkgs.path}/.version $out/nixpkgs/
-  '';
 
   nixVerify = stdenv.mkDerivation {
     name = "nix-verify";
@@ -55,12 +47,10 @@ let
       nix
       # nix-store uses cat program to display results as specified by
       # the image env variable NIX_PAGER.
-      pkgs.coreutils
+      pkgs.coreutils pkgs.gnused
       # nix-channel/nix-build/nix-env needs SSL_CERT_FILE set to be able to
       # download from binary cache. we also set GIT_SSL_CAINFO.
       pkgs.cacert
-      # TODO: write why we need it
-      nixpkgsChannel
       # TODO: write why we need it
       pkgs.bashInteractive
     ] ++ contents;
@@ -69,8 +59,47 @@ let
     #'';
   };
 
+  shadowSetup = ''
+    NIX_GROUP_NB=30
+
+    export PATH=${pkgs.shadow}/bin:$PATH
+
+    mkdir -p etc/pam.d
+    if [[ ! -f etc/passwd ]]; then
+      echo 'root:x:0:0::/root:/root/.nix-profile/bin/bash' > etc/passwd
+
+      # Create NIX_GROUP_NB Nix build users
+      for i in $(seq 1 $NIX_GROUP_NB); do echo "nixbld$i:x:$((30000 + $i)):30000:::" >> etc/passwd; done
+
+      echo "root:!x:::::::" > etc/shadow
+    fi
+    if [[ ! -f etc/group ]]; then
+      echo "root:x:0:" > etc/group
+
+      # Create the nixbld group
+      echo -n "nixbld:x:30000:nixbld1" >> etc/group
+      for i in $(seq 2 $NIX_GROUP_NB); do echo -n ",nixbld$i" >> etc/group; done
+      echo >> etc/group
+
+      echo "root:x::" > etc/gshadow
+    fi
+
+    if [[ ! -f etc/pam.d/other ]]; then
+      cat > etc/pam.d/other <<EOF
+    account sufficient pam_unix.so
+    auth sufficient pam_rootok.so
+    password requisite pam_unix.so nullok sha512
+    session required pam_unix.so
+    EOF
+    fi
+    if [[ ! -f etc/login.defs ]]; then
+      touch etc/login.defs
+    fi
+  '';
+
+
   buildImageWithNix = args@{ contents ? []
-                           , runAsRoot ? ""
+                           , extraCommands ? ""
                            , nix ? pkgs.nix
                            , config ? defaultConfig
                            , ...
@@ -80,55 +109,46 @@ let
     in
     (pkgs.dockerTools.buildImageWithNixDb (args // {
       inherit config;
-      runAsRoot = ''
+      contents = [contentsEnv];
+      extraCommands = ''
         #!${stdenv.shell}
-        ${pkgs.dockerTools.shadowSetup}
+        chmod u+w etc
 
-        # Create root user
-        mkdir -p /etc
-        echo 'root:x:0:0::/root:/root/.nix-profile/bin/bash' > /etc/passwd
-        echo 'root:x:0:' > /etc/group
+        ${shadowSetup}
 
         # TODO: why do we need this files explain in comments
-        mkdir -p /etc
-        echo 'hosts: files dns myhostname mymachines' > /etc/nsswitch.conf
+        mkdir -p etc
+        echo 'hosts: files dns myhostname mymachines' > etc/nsswitch.conf
 
         # Create temporary folder
-        mkdir /tmp
-        chmod 1777 /tmp
+        mkdir tmp
+        chmod 1777 tmp
 
         # Subscribe to Nix channel
-        mkdir -p /root
-        echo 'https://nixos.org/channels/${channel} nixpkgs' > /root/.nix-channels
-
-        # Create initial channel
-        mkdir -p /nix/var/nix/profiles/per-user/root /root/.nix-defexpr
-        ln -s ${nixpkgsChannel} /nix/var/nix/profiles/per-user/root/channels-1-link
-        ln -s channels-1-link /nix/var/nix/profiles/per-user/root/channels
-        ln -s /nix/var/nix/profiles/per-user/root/channels /root/.nix-defexpr/channels_root
+        mkdir -p root
+        echo 'https://nixos.org/channels/${channel} nixpkgs' > root/.nix-channels
 
         # Create default profile for
-        mkdir -p /nix/var/nix/profiles
-        ln -s ${contentsEnv} /nix/var/nix/profiles/per-user/root/default-1-link
-        ln -s default-1-link /nix/var/nix/profiles/per-user/root/default
+        mkdir -p nix/var/nix/profiles/per-user/root
+        ln -s ${contentsEnv} nix/var/nix/profiles/per-user/root/default-1-link
+        ln -s default-1-link nix/var/nix/profiles/per-user/root/default
         # things installed with nix-env go to /nix/var/nix/profiles/per-user/root/default
         # we need to create ~/.nix-profile symlink manually
-        ln -s /nix/var/nix/profiles/per-user/root/default /root/.nix-profile
+        ln -s /nix/var/nix/profiles/per-user/root/default root/.nix-profile
 
-
-        mkdir -p /nix/var/nix/gcroots
-        ln -s /nix/var/nix/profiles /nix/var/nix/gcroots/profiles
+        mkdir -p nix/var/nix/gcroots
+        # TODO: remove the profiles file created by buildImageWithNixDB (the link is wrong)
+        ln -sf /nix/var/nix/profiles nix/var/nix/gcroots/profiles
 
         # Make the shell source nix.sh during login.
-        nix_profile=/root/.nix-profile/etc/profile.d/nix.sh
-        echo "if [ -e $nix_profile ]; then . $nix_profile; fi" >> /root/.bash_profile
-      '' + runAsRoot;
+        nix_profile=root/.nix-profile/etc/profile.d/nix.sh
+        echo "if [ -e $nix_profile ]; then . $nix_profile; fi" >> root/.bash_profile
+      '' + extraCommands;
     }));
 
 in
 {
   inherit nixVerify
-          nixpkgsChannel
           mkNixEnv
           buildImageWithNix;
   docker = {
@@ -136,6 +156,7 @@ in
       name = "nix";
       tag = nixVersion;
       contents = [
+
         # used for testing, for now
         nixVerify
         # temporary remove when done
