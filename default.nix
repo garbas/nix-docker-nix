@@ -86,7 +86,18 @@ let
         # Create root user
         mkdir -p /etc
         echo 'root:x:0:0::/root:/root/.nix-profile/bin/bash' > /etc/passwd
+        echo 'nixbld0:x:3000:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld1:x:3001:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld2:x:3002:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld3:x:3003:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld4:x:3004:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld5:x:3005:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld6:x:3006:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld7:x:3007:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld8:x:3008:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
+        echo 'nixbld9:x:3009:1::/root:/root/.nix-profile/bin/bash' >> /etc/passwd
         echo 'root:x:0:' > /etc/group
+        echo 'nixbld:x:1:nixbld0,nixbld1,nixbld2,nixbld3,nixbld4,nixbld5,nixbld6,nixbld7,nixbld8,nixbld9' > /etc/group
 
         # TODO: why do we need this files explain in comments
         mkdir -p /etc
@@ -121,6 +132,7 @@ let
         # Make the shell source nix.sh during login.
         nix_profile=/root/.nix-profile/etc/profile.d/nix.sh
         echo "if [ -e $nix_profile ]; then . $nix_profile; fi" >> /root/.bash_profile
+
       '' + runAsRoot;
     }));
 
@@ -140,6 +152,13 @@ in
         # temporary remove when done
         pkgs.tree
         pkgs.gnugrep
+      ];
+    };
+    interactive = buildImageWithNix {
+      name = "nix";
+      tag = nixVersion;
+      contents = [
+        pkgs.bashInteractive
       ];
     };
     # TODO: withSandbox = buildImageWithNixSandbox {
