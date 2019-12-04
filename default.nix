@@ -158,10 +158,16 @@ in
         echo "sandbox = false" > /etc/nix/nix.conf
       '';
     };
-    # TODO: withSandbox = buildImageWithNixSandbox {
-    #   name = "nix-sandbox";
-    #   tag = nixVersion;
-    # };
+    withSandbox = buildImageWithNix {
+      name = "nix-sandbox";
+      tag = nixVersion;
+      contents = [
+        pkgs.bashInteractive
+      ];
+      runAsRoot = ''
+        echo "sandbox-build-dir = /tmp" > /etc/nix/nix.conf
+      '';
+    };
     # TODO: withDeamon = buildImageWithNixDaemon {
     #   name = "nix-daemon";
     #   tag = nixVersion;
