@@ -153,13 +153,10 @@ in
         pkgs.tree
         pkgs.gnugrep
       ];
-    };
-    interactive = buildImageWithNix {
-      name = "nix";
-      tag = nixVersion;
-      contents = [
-        pkgs.bashInteractive
-      ];
+      extraCommands = ''
+        mkdir -p /etc/nix
+        echo "sandbox = false" > /etc/nix/nix.conf
+      '';
     };
     # TODO: withSandbox = buildImageWithNixSandbox {
     #   name = "nix-sandbox";
