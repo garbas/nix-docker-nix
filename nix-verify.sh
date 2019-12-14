@@ -44,6 +44,12 @@ cd $BATS_TMPDIR
   [ "`./result/bin/hello`" == "Hello, world!" ]
 }
 
+@test "Verify hello build using nix-build" {
+  nix-build -E 'with (import <nixpkgs> {}); hello.overrideAttrs(old:{forcerebuild=1;})'
+  nix-build -E '<nixpkgs>' -A hello --check
+  [ "`./result/bin/hello`" == "Hello, world!" ]
+}
+
 @test "Test sandbox is disabled" {
   cat >tmp.nix <<'EOL'
 let
